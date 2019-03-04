@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/webheroesinc/node-stdlog#readme",
   "dependencies": {
+    "sprintf-js": "^1.1.2",
     "winston": "^3.2.1"
   }
 }
