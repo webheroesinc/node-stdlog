@@ -3,7 +3,7 @@ const { createLogger, format, transports }	= require('winston');
 const sprintf					= require('sprintf-js').sprintf;
 const { combine, timestamp, label, printf }	= format;
 
-module.exports					= function Logger( name, formatter, streams ) {
+module.exports					= function Logger( name, {level, formatter, streams} ) {
 
     if ( formatter === undefined ) {
 	formatter				= printf(
@@ -22,6 +22,7 @@ module.exports					= function Logger( name, formatter, streams ) {
     }
 
     return createLogger({
+	level,
 	format:		combine( label({ label: name }), timestamp(), formatter ),
 	transports:	streams,
     });
