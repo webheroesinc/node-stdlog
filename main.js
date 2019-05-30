@@ -1,9 +1,30 @@
 
 const { createLogger, format, transports }	= require('winston');
-const sprintf					= require('sprintf-js').sprintf;
 const { combine, timestamp, label, printf }	= format;
+const sprintf					= require('sprintf-js').sprintf;
 
-module.exports					= function Logger( name, {level, formatter, streams} ) {
+let defaultLevels				= {
+    fatal: 0,
+    error: 1,
+    warn: 2,
+    normal: 3,
+    info: 4,
+    debug: 5,
+    silly: 6,
+};
+let logLevelNames;
+
+module.exports					= function Logger(
+    name,
+    {
+	level = 'fatal',
+	levels = defaultLevels,
+	formatter,
+	streams
+    } = {}
+) {
+
+    logLevelNames				= Object.keys( defaultLevels );
 
     if ( formatter === undefined ) {
 	formatter				= printf(
@@ -17,14 +38,41 @@ module.exports					= function Logger( name, {level, formatter, streams} ) {
     
     if ( streams === undefined ) {
 	streams					= [
-	    new transports.Console(),
+	    new transports.Console({
+		stderrLevels: logLevelNames,
+	    }),
 	];
     }
 
-    return createLogger({
+    streams.map(function( transport ) {
+	transport.setLevel			= function( level ) {
+	    if ( level === undefined )
+		level				= 0;
+
+	    this.level				= level <= logLevelNames.length
+		? logLevelNames[ level ]
+		: logLevelNames[ logLevelNames.length-1 ];
+	};
+    });
+
+    const logger				= createLogger({
 	level,
+	levels,
 	format:		combine( label({ label: name }), timestamp(), formatter ),
 	transports:	streams,
     });
+
+    function wrapMethod(level, method) {
+	return function() {
+	    const args				= [...arguments].map( arg => String(arg) );
+	    return method( sprintf.apply(sprintf, args) );
+	}
+    }
+
+    for (let level of logLevelNames) {
+	logger[level] = wrapMethod( level, logger[level] );
+    }
+    
+    return logger;
     
 };
