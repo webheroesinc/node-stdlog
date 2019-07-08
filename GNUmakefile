@@ -3,4 +3,4 @@ install:
 	npm i
 
 tests:
-	@nodejs tests.js
+	@node tests.js
