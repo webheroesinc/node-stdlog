@@ -19,6 +19,14 @@ log.transports[0].setLevel( 6 );
 log.debug("JSON dump %s", { name: "Winston Churchill" });
 log.debug("JSON dump %s", ['debug', 'info', 'warn', 'error']);
 
+log.transports[0].setLevel( 3 );
+
+log.silly(() => {
+    throw new Error("This should NOT run")
+});
+log.normal(() => ["Who keeps the metric system down? %s", "wee doooo"]);
+log.normal("Who keeps the metric system down? %s", () => ["wee doooo"]);
+
 // log.warn("Discovered %s in %s", () => [
 //     asset, location
 // ]);

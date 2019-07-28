@@ -20,7 +20,7 @@ module.exports					= function Logger(
 	level = 'fatal',
 	levels = defaultLevels,
 	template,
-	json_dump = true,
+	// json_dump = true,
 	streams
     } = {}
 ) {
@@ -34,9 +34,29 @@ module.exports					= function Logger(
 	    function({ level, message, label, timestamp }) {
 		// Add prefix to every log message
 		if ( Array.isArray(message) ) {
+
+		    if ( typeof message[0] === 'function' ) {
+			if ( message.length > 1 )
+			    throw new Error(sprintf("Only 1 argument allowed when first argument is a function, %d arguments were given", message.length ));
+			
+			message			= message[0]();
+		    }
+		    else if ( typeof message[1] === 'function' ) {
+			if ( message.length > 2 )
+			    throw new Error(sprintf("Only 2 argument allowed when second argument is a function, %d arguments were given", message.length ));
+			
+			message			= [ message[0] ].concat( message[1]() );
+		    }
+
+		    if ( ! Array.isArray(message) )
+			throw new Error(sprintf("Must return an array when using a function in log arguments, type %s given", typeof message ));
+		    else if ( typeof message[0] !== 'string' )
+			throw new Error(sprintf("First argument must be a string, type %s given", typeof message[0] ));
+		    
 		    args			= message.map(
 			v => typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)
 		    );
+		    
 		    message			= sprintf(...args);
 		}
 		return sprintf('%s [ %-10.10s ] %5.5s: %s', timestamp, label, level.toUpperCase(), message);
