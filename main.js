@@ -88,7 +88,7 @@ module.exports					= function Logger(
 	    if ( level === undefined )
 		level				= 0;
 
-	    this.level				= level <= logLevelNames.length
+	    this.level				= level < logLevelNames.length
 		? logLevelNames[ level ]
 		: logLevelNames[ logLevelNames.length-1 ];
 	};
