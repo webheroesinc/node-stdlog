@@ -1,6 +1,6 @@
 {
   "name": "@whi/stdlog",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Custom standard logging wrapper for winston",
   "main": "main.js",
   "scripts": {
