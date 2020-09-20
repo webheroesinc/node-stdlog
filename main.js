@@ -14,11 +14,13 @@ let defaultLevels				= {
 };
 let logLevelNames;
 
+
 module.exports					= function Logger(
     name,
     {
 	level = 'fatal',
 	levels = defaultLevels,
+	color_config = {},
 	template,
 	// json_dump = true,
 	streams
@@ -26,6 +28,9 @@ module.exports					= function Logger(
 ) {
 
     logLevelNames				= Object.keys( defaultLevels );
+    let colors					= color_config === false || module.exports.COLOR_CONFIG === false
+	? false
+	: Object.assign({}, module.exports.COLOR_CONFIG, color_config );
 
     if ( template === undefined ) {
 	// 'logform.printf' has nothing in common with 'printf'.  It is simply a wrapper that calls
@@ -59,7 +64,17 @@ module.exports					= function Logger(
 		    
 		    message			= sprintf(...args);
 		}
-		return sprintf('%s [ %-10.10s ] %5.5s: %s', timestamp, label, level.toUpperCase(), message);
+
+		let color_level			= "";
+		let color_msg			= "";
+		level				= level.toUpperCase();
+
+		if ( colors !== false ) {
+		    color_level			= colors[`${level}_LEVEL`]	|| COLOR_RESET;
+		    color_msg			= colors[`${level}_MESSAGE`]	|| COLOR_RESET;
+		}
+
+		return sprintf("%s [ %-10.10s ] %s%5.5s%s: %s\x1b[0m", timestamp, label, color_level, level, color_msg, message);
 	    }
 	);
     } else {
@@ -112,4 +127,28 @@ module.exports					= function Logger(
     
     return logger;
     
+};
+
+const COLOR_RESET				= "\x1b[0m";
+module.exports.COLOR_CONFIG			= {
+    "FATAL_LEVEL":	"\x1b[91;1m",
+    "FATAL_MESSAGE":	"",
+
+    "ERROR_LEVEL":	"\x1b[31m",
+    "ERROR_MESSAGE":	"",
+
+    "WARN_LEVEL":	"\x1b[33;1m",
+    "WARN_MESSAGE":	"\x1b[22m",
+
+    "NORMAL_LEVEL":	"\x1b[35;1m",
+    "NORMAL_MESSAGE":	COLOR_RESET,
+
+    "INFO_LEVEL":	"\x1b[36;1m",
+    "INFO_MESSAGE":	COLOR_RESET,
+
+    "DEBUG_LEVEL":	"\x1b[1m",
+    "DEBUG_MESSAGE":	COLOR_RESET,
+
+    "SILLY_LEVEL":	"\x1b[2;1m",
+    "SILLY_MESSAGE":	"\x1b[0;2m",
 };
