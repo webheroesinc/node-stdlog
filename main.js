@@ -70,8 +70,10 @@ module.exports					= function Logger(
 		level				= level.toUpperCase();
 
 		if ( colors !== false ) {
-		    color_level			= colors[`${level}_LEVEL`]	|| COLOR_RESET;
-		    color_msg			= colors[`${level}_MESSAGE`]	|| COLOR_RESET;
+		    color_level			= typeof colors[`${level}_LEVEL`] === "string"
+			? colors[`${level}_LEVEL`] : COLOR_RESET;
+		    color_msg			= typeof colors[`${level}_MESSAGE`] === "string"
+			? colors[`${level}_MESSAGE`] : COLOR_RESET;
 		}
 
 		return sprintf("%s [ %-10.10s ] %s%5.5s%s: %s\x1b[0m", timestamp, label, color_level, level, color_msg, message);
