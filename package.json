@@ -1,10 +1,10 @@
 {
   "name": "@whi/stdlog",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Custom standard logging wrapper for winston",
   "main": "main.js",
   "scripts": {
-    "test": "make tests"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
@@ -23,6 +23,6 @@
   "homepage": "https://github.com/webheroesinc/node-stdlog#readme",
   "dependencies": {
     "sprintf-js": "^1.1.2",
-    "winston": "^3.2.1"
+    "winston": "^3.3.3"
   }
 }
